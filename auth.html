@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Canvas Interactive</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Canvas background styling */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 min-h-screen flex items-center justify-center p-4 overflow-hidden relative">
+
+    <!-- Canvas Interactive Background -->
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- Container Utama Centered Card -->
+    <div class="w-full max-w-md relative z-10">
+        <!-- Logo / Icon Top Header -->
+        <div class="text-center mb-6">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-500/20 text-indigo-400 mb-3 ring-1 ring-indigo-500/30 backdrop-blur-md">
+                <i data-lucide="shield-check" class="w-7 h-7"></i>
+            </div>
+            <h2 id="headerTitle" class="text-2xl font-bold text-white tracking-tight">Selamat Datang Kembali</h2>
+            <p id="headerSubtitle" class="text-slate-400 text-sm mt-1">Silakan masuk ke akun Anda</p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="glass-card rounded-2xl shadow-2xl p-8 border border-white/20 relative transition-all duration-300">
+            
+            <!-- Toast Notification -->
+            <div id="toast" class="hidden mb-6 p-4 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-3">
+                <i id="toast-icon" class="w-5 h-5 flex-shrink-0"></i>
+                <span id="toast-message"></span>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="flex bg-slate-200/60 p-1 rounded-xl mb-6 text-xs font-semibold">
+                <button type="button" id="tabLoginBtn" onclick="switchForm('login')" class="flex-1 py-2 rounded-lg transition-all text-slate-800 bg-white shadow-sm">
+                    Masuk
+                </button>
+                <button type="button" id="tabRegisterBtn" onclick="switchForm('register')" class="flex-1 py-2 rounded-lg transition-all text-slate-500 hover:text-slate-700">
+                    Daftar
+                </button>
+            </div>
+
+            <form id="authForm" onsubmit="handleSubmit(event)" novalidate class="space-y-4">
+                <!-- Input Nama Lengkap (Khusus Register) -->
+                <div id="nameGroup" class="hidden">
+                    <label for="fullName" class="block text-xs font-medium text-slate-700 mb-1">Nama Lengkap</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i data-lucide="user" class="w-4 h-4"></i>
+                        </div>
+                        <input type="text" id="fullName"
+                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm"
+                            placeholder="Nama Lengkap Anda">
+                    </div>
+                    <p id="nameError" class="text-xs text-red-500 mt-1 hidden"></p>
+                </div>
+
+                <!-- Input Email -->
+                <div>
+                    <label for="email" class="block text-xs font-medium text-slate-700 mb-1">Alamat Email</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                        </div>
+                        <input type="email" id="email" required
+                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm"
+                            placeholder="nama@contoh.com">
+                    </div>
+                    <p id="emailError" class="text-xs text-red-500 mt-1 hidden"></p>
+                </div>
+
+                <!-- Input Password -->
+                <div>
+                    <label for="password" class="block text-xs font-medium text-slate-700 mb-1">Kata Sandi</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i data-lucide="lock" class="w-4 h-4"></i>
+                        </div>
+                        <input type="password" id="password" required
+                            class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm"
+                            placeholder="••••••••">
+                        <!-- Toggle Password Button -->
+                        <button type="button" onclick="togglePasswordVisibility('password', 'eyeIcon')" 
+                            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
+                            <i data-lucide="eye" id="eyeIcon" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <p id="passwordError" class="text-xs text-red-500 mt-1 hidden"></p>
+                </div>
+
+                <!-- Input Konfirmasi Password (Khusus Register) -->
+                <div id="confirmPasswordGroup" class="hidden">
+                    <label for="confirmPassword" class="block text-xs font-medium text-slate-700 mb-1">Konfirmasi Kata Sandi</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i>
+                        </div>
+                        <input type="password" id="confirmPassword"
+                            class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm"
+                            placeholder="••••••••">
+                        <button type="button" onclick="togglePasswordVisibility('confirmPassword', 'confirmEyeIcon')" 
+                            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
+                            <i data-lucide="eye" id="confirmEyeIcon" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <p id="confirmPasswordError" class="text-xs text-red-500 mt-1 hidden"></p>
+                </div>
+
+                <!-- Remember Me (Khusus Login) -->
+                <div id="rememberGroup" class="flex items-center">
+                    <input type="checkbox" id="remember" class="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer">
+                    <label for="remember" class="ml-2 block text-xs text-slate-600 cursor-pointer select-none">Ingat saya di perangkat ini</label>
+                </div>
+
+                <!-- Syarat & Ketentuan (Khusus Register) -->
+                <div id="termsGroup" class="hidden flex items-start">
+                    <input type="checkbox" id="terms" class="w-4 h-4 mt-0.5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer">
+                    <label for="terms" class="ml-2 block text-xs text-slate-600 cursor-pointer select-none">
+                        Saya menyetujui <a href="#" class="text-indigo-600 hover:underline">Syarat & Ketentuan</a> berlaku.
+                    </label>
+                </div>
+
+                <!-- Tombol Submit -->
+                <button type="submit" id="submitBtn" 
+                    class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-600/30 transition-all duration-200 flex items-center justify-center gap-2 mt-2">
+                    <span id="btnText">Masuk Akun</span>
+                    <i data-lucide="arrow-right" id="btnIcon" class="w-4 h-4"></i>
+                </button>
+            </form>
+
+            <!-- Bottom Toggle Text -->
+            <div class="text-center mt-5">
+                <p id="bottomToggleText" class="text-xs text-slate-500">
+                    Belum punya akun? 
+                    <button type="button" onclick="switchForm('register')" class="font-semibold text-indigo-600 hover:text-indigo-500 transition-colors">Daftar sekarang</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inisialisasi Lucide Icons
+        lucide.createIcons();
+
+        // Mode Form Status ('login' / 'register')
+        let currentMode = 'login';
+
+        // -----------------------------------------------------------------
+        // HTML5 Canvas Interactive Animation
+        // -----------------------------------------------------------------
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        let particles = [];
+        const particleCount = Math.min(Math.floor(window.innerWidth / 15), 70);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.radius = Math.random() * 2 + 1;
+                this.vx = (Math.random() - 0.5) * 0.8;
+                this.vy = (Math.random() - 0.5) * 0.8;
+                this.alpha = Math.random() * 0.5 + 0.3;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(129, 140, 248, ${this.alpha})`;
+                ctx.fill();
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+        }
+
+        function initCanvas() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function connectParticles() {
+            for (let a = 0; a < particles.length; a++) {
+                for (let b = a + 1; b < particles.length; b++) {
+                    const dx = particles[a].x - particles[b].x;
+                    const dy = particles[a].y - particles[b].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 130) {
+                        const opacity = 1 - (distance / 130);
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(99, 102, 241, ${opacity * 0.25})`;
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(particles[b].x, particles[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            connectParticles();
+            requestAnimationFrame(animateCanvas);
+        }
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initCanvas();
+        });
+
+        initCanvas();
+        animateCanvas();
+
+        // -----------------------------------------------------------------
+        // Switch Form Mode Logic (Login <-> Register)
+        // -----------------------------------------------------------------
+        function switchForm(mode) {
+            currentMode = mode;
+
+            // Reset error messages
+            clearErrors();
+
+            const headerTitle = document.getElementById('headerTitle');
+            const headerSubtitle = document.getElementById('headerSubtitle');
+            const tabLoginBtn = document.getElementById('tabLoginBtn');
+            const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+            const nameGroup = document.getElementById('nameGroup');
+            const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
+            const rememberGroup = document.getElementById('rememberGroup');
+            const termsGroup = document.getElementById('termsGroup');
+            const btnText = document.getElementById('btnText');
+            const bottomToggleText = document.getElementById('bottomToggleText');
+
+            if (mode === 'register') {
+                headerTitle.textContent = 'Buat Akun Baru';
+                headerSubtitle.textContent = 'Daftar sekarang untuk memulai';
+
+                tabRegisterBtn.className = 'flex-1 py-2 rounded-lg transition-all text-slate-800 bg-white shadow-sm';
+                tabLoginBtn.className = 'flex-1 py-2 rounded-lg transition-all text-slate-500 hover:text-slate-700';
+
+                nameGroup.classList.remove('hidden');
+                confirmPasswordGroup.classList.remove('hidden');
+                termsGroup.classList.remove('hidden');
+                rememberGroup.classList.add('hidden');
+
+                btnText.textContent = 'Daftar Sekarang';
+                bottomToggleText.innerHTML = 'Sudah punya akun? <button type="button" onclick="switchForm(\'login\')" class="font-semibold text-indigo-600 hover:text-indigo-500 transition-colors">Masuk di sini</button>';
+            } else {
+                headerTitle.textContent = 'Selamat Datang Kembali';
+                headerSubtitle.textContent = 'Silakan masuk ke akun Anda';
+
+                tabLoginBtn.className = 'flex-1 py-2 rounded-lg transition-all text-slate-800 bg-white shadow-sm';
+                tabRegisterBtn.className = 'flex-1 py-2 rounded-lg transition-all text-slate-500 hover:text-slate-700';
+
+                nameGroup.classList.add('hidden');
+                confirmPasswordGroup.classList.add('hidden');
+                termsGroup.classList.add('hidden');
+                rememberGroup.classList.remove('hidden');
+
+                btnText.textContent = 'Masuk Akun';
+                bottomToggleText.innerHTML = 'Belum punya akun? <button type="button" onclick="switchForm(\'register\')" class="font-semibold text-indigo-600 hover:text-indigo-500 transition-colors">Daftar sekarang</button>';
+            }
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('[id$="Error"]').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('input').forEach(input => input.classList.remove('border-red-500'));
+            document.getElementById('toast').classList.add('hidden');
+        }
+
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        function showToast(message, isSuccess = true) {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toast-icon');
+            const toastMessage = document.getElementById('toast-message');
+
+            toastMessage.textContent = message;
+            toast.classList.remove('hidden', 'bg-red-50', 'text-red-700', 'border-red-200', 'bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
+
+            if (isSuccess) {
+                toast.classList.add('bg-emerald-50', 'text-emerald-700', 'border', 'border-emerald-200');
+                toastIcon.setAttribute('data-lucide', 'check-circle');
+            } else {
+                toast.classList.add('bg-red-50', 'text-red-700', 'border', 'border-red-200');
+                toastIcon.setAttribute('data-lucide', 'alert-circle');
+            }
+
+            lucide.createIcons();
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+
+            clearErrors();
+
+            const fullName = document.getElementById('fullName');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirmPassword');
+            const terms = document.getElementById('terms');
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+
+            let isValid = true;
+
+            // Validasi Nama (hanya Register)
+            if (currentMode === 'register') {
+                if (!fullName.value.trim()) {
+                    document.getElementById('nameError').textContent = 'Nama lengkap wajib diisi.';
+                    document.getElementById('nameError').classList.remove('hidden');
+                    fullName.classList.add('border-red-500');
+                    isValid = false;
+                }
+            }
+
+            // Validasi Email
+            const emailValue = emailInput.value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailValue) {
+                document.getElementById('emailError').textContent = 'Alamat email wajib diisi.';
+                document.getElementById('emailError').classList.remove('hidden');
+                emailInput.classList.add('border-red-500');
+                isValid = false;
+            } else if (!emailRegex.test(emailValue)) {
+                document.getElementById('emailError').textContent = 'Format email tidak valid.';
+                document.getElementById('emailError').classList.remove('hidden');
+                emailInput.classList.add('border-red-500');
+                isValid = false;
+            }
+
+            // Validasi Password
+            const passwordValue = passwordInput.value;
+            if (!passwordValue) {
+                document.getElementById('passwordError').textContent = 'Kata sandi wajib diisi.';
+                document.getElementById('passwordError').classList.remove('hidden');
+                passwordInput.classList.add('border-red-500');
+                isValid = false;
+            } else if (passwordValue.length < 6) {
+                document.getElementById('passwordError').textContent = 'Kata sandi minimal 6 karakter.';
+                document.getElementById('passwordError').classList.remove('hidden');
+                passwordInput.classList.add('border-red-500');
+                isValid = false;
+            }
+
+            // Validasi Konfirmasi Password & Syarat Ketentuan (hanya Register)
+            if (currentMode === 'register') {
+                if (confirmPassword.value !== passwordValue) {
+                    document.getElementById('confirmPasswordError').textContent = 'Konfirmasi kata sandi tidak cocok.';
+                    document.getElementById('confirmPasswordError').classList.remove('hidden');
+                    confirmPassword.classList.add('border-red-500');
+                    isValid = false;
+                }
+
+                if (!terms.checked) {
+                    showToast('Anda harus menyetujui Syarat & Ketentuan.', false);
+                    return;
+                }
+            }
+
+            if (!isValid) {
+                showToast('Harap periksa kembali formulir Anda.', false);
+                return;
+            }
+
+            submitBtn.disabled = true;
+            const originalText = btnText.textContent;
+            btnText.textContent = 'Memproses...';
+
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                btnText.textContent = originalText;
+                
+                if (currentMode === 'login') {
+                    showToast('Login berhasil! Mengalihkan...', true);
+                } else {
+                    showToast('Pendaftaran berhasil! Silakan masuk.', true);
+                    setTimeout(() => switchForm('login'), 1200);
+                }
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

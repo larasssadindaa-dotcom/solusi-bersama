@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SolusiBersama.com</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <header>
+        <div class="logo">SolusiBersama<span>.com</div></span></div>
+
+        <nav id="navbar">
+            <a href="#beranda">Beranda</a>
+            <a href="#katalog">Katalog</a>
+            <a href="#tentang">Tentang Kami</a>
+            <a href="#login" class="btn-login">Login / Daftar</a>
+        </nav>
+
+        <button class="menu-toggle" id="menuToggle" aria-label="Buka menu">☰</button>
+    </header>
+
+    <section class="hero" id="beranda">
+        <div class="hero-text">
+            <h1>Marilah Lapor Tentang Sekitar Kita.</h1>
+
+            <p>
+                Sayangilah & Peka Terhadap di sekitar kita
+            </p>
+
+            <a href="#katalog" class="btn-primary">
+                Lapor Sekarang
+            </a>
+        </div>
+
+        <div class="hero-image">
+            <div class="recycle-icon">♻</div>
+        </div>
+    </section>
+
+    <section class="tentang" id="tentang">
+        <h2>Bagaimana Cara SolusiBersama.com Bekerja?</h2>
+        <p class="subtitle">
+            Lima langkah sederhana 
+        </p>
+
+        <div class="steps">
+            <div class="step">
+                
+                <h3>Tulis Lapor / Permasalahan</h3>
+                <p>
+                    Pabrik mengunggah data sisa bahan yang masih
+                    dapat dimanfaatkan.
+                </p>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="step">
+                <div class="icon">🧑‍🔧</div>
+                <h3>Prosesnya Verivikasi</h3>
+                <p>
+                    Pengrajin dan UMKM memilih bahan sesuai kebutuhan.
+                </p>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="step">
+                <div class="icon">💬</div>
+                <h3>Tindak Lanjut</h3>
+                <p>
+                    Pengguna berkomunikasi dan mengatur pengiriman bahan.
+                </p>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="step">
+                <div class="icon">💬</div>
+                <h3>Tanggapan</h3>
+                <p>
+                    Pengguna berkomunikasi dan mengatur pengiriman bahan.
+                </p>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="step">
+                <div class="icon">💬</div>
+                <h3>Selesai</h3>
+                <p>
+                    Pengguna berkomunikasi dan mengatur pengiriman bahan.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="katalog" id="katalog">
+        <h2>Katalog Lapor</h2>
+        <p class="subtitle">
+            Temukan katalog yang sesuai permasalahan.
+        </p>
+
+        <input
+            type="search"
+            id="searchInput"
+            placeholder="Cari katalog..."
+            aria-label="Cari Katalog"
+        >
+
+        <div class="categories">
+            <button class="category active" data-category="Semua">
+                Semua
+            </button>
+
+            <button class="category" data-category="Elektronik kantor">
+                Anonim
+            </button>
+
+            <button class="category" data-category="Limbah industri">
+                Rahasia
+            </button>/
+        </div>
+
+        <div class="product-container">
+
+            <div class="product" data-category="Rahasia">
+                <div class="product-icon elektronik">⌨</div>
+                <h3>Rahasia</h3>
+                <p>
+                    Identitas Pelapor hanya terlihat oleh instansi pemerintah
+                </p>
+                <button class="detail-btn" data-name="Rahasia">
+                    Lihat Detail
+                </button>
+            </div>
+
+            <div class="product" data-category="Anonim">
+                <div class="product-icon limbah">⚙</div>
+                <h3>Anonim</h3>
+                <p>
+                Identitas Pelapor sepenuhnya di sembunyikan dari masyarakat (publik) maupun daari instansi
+                pemerintah
+                </p>
+                <button class="detail-btn" data-name="Anonim">
+                    Lihat Detail
+                </button>
+            </div>
+
+        </div>
+
+        <p id="emptyState" hidden>Bahan tidak ditemukan.</p>
+    </section>
+
+    <section class="contact" id="login">
+        <h2>Ayo lapor sekarang juga!</h2>
+        <p>
+            Punya Permasalahan di lingkungan sekitar anda?
+            Maka Lapor ke SolusiBersama.com
+        </p>
+    </section>
+
+   
+
+</body>
+</html>
